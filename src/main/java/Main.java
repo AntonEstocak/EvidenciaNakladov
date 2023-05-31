@@ -8,38 +8,64 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) throws SQLException, DocumentException, IOException {
         Funkcionalita funkcionalita = new Funkcionalita();
-        //funkcionalita.zadajTextovyUdaj(); // OK
-        //double sucet = funkcionalita.spocitajVsetkyVydavky();
-        //System.out.println("Celková hodnota výdavkov je: " + sucet);
-        //int pocet = funkcionalita.zistiPocetVsetkychVydavkov();
-        //System.out.println("Počet výdavkov je: " + pocet);
-        //funkcionalita.vypisMenu(); // OK
-        funkcionalita.exportMySQL2PDF();
+        funkcionalita.setConn(); // Pripojit sa na databazu
 
         // START Ulozenie vydavku
 /*        Vydavok vydavokObjekt = new Vydavok();
-        vydavokObjekt.setPopis("Sukňa");
-        vydavokObjekt.setCena(20.90);
-        vydavokObjekt.setKategoria("Oblečenie");
-        Calendar currenttime = Calendar.getInstance();
-        Date dnesnyDatum = new Date((currenttime.getTime()).getTime()); // aktualny dnesny Datum
-        vydavokObjekt.setDatum(dnesnyDatum);
-        vydavokObjekt.setDatum(new Date(2023,2,26)); // vytvorenie vlastneho datumu, to je vsak zastaraly sposob (deprecated), neodporuca sa!
+        vydavokObjekt.setPopis("Čerešne");
+        vydavokObjekt.setCena(10.9);
+        vydavokObjekt.setKategoria("Ovocie");
+        vydavokObjekt.setDatum(Date.valueOf(LocalDate.of( 2023 , 2 , 28 )));
         funkcionalita.ulozMySQL(vydavokObjekt);*/
         // END Ulozenie vydavku
 
-        Vydavok vydavokObjekt = new Vydavok();
-        vydavokObjekt.setPopis("Kofola");
-        vydavokObjekt.setCena(1.49);
-        vydavokObjekt.setKategoria("Potraviny - nápoje");
-        vydavokObjekt.setDatum(Date.valueOf(LocalDate.of( 2023 , 2 , 28 )));
-        funkcionalita.aktualizujMySQL(2, vydavokObjekt);
-        //funkcionalita.odstranMySQL(1);
 
+
+
+        // START Aktualizacia vydavku
+/*        Vydavok vydavokObjekt = new Vydavok();
+        vydavokObjekt.setPopis("Sukňa");
+        vydavokObjekt.setCena(20.9);
+        vydavokObjekt.setKategoria("Oblečenie");
+        vydavokObjekt.setDatum(Date.valueOf(LocalDate.of( 2023 , 5 , 31 )));
+        funkcionalita.aktualizujMySQL(3, vydavokObjekt);*/
+        // END Aktializacia vydavku
+
+        //funkcionalita.odstranMySQL(2);
+
+        // START Zobrazenie vydavkov
+        ArrayList<Vydavok> vydavky = funkcionalita.vyberVsetkyMySQL();
+        for (Vydavok vydavok : vydavky) {
+            System.out.println(vydavok);
+        }
+        // END Zobrazenie vydavkov
+
+        // Zobraz celkove vydavky + financu menu Eur
+        double celkoveVydavky = funkcionalita.spocitajVsetkyVydavky();
+        System.out.println("Celkové výdavky sú: " + funkcionalita.pridajFinancnuMenu(celkoveVydavky, "Eur"));
+        System.out.println("Celkové výdavky v CZK po konverzii z EUR sú: " + funkcionalita.konverziaMeny(celkoveVydavky, "CZK"));
+        System.out.println("Celkové výdavky v USD po konverzii z EUR sú: " + funkcionalita.konverziaMeny(celkoveVydavky, "USD"));
+
+        ArrayList<Vydavok> vydavkyPreSucet = funkcionalita.vyberVsetkyMySQL();
+        double sum = 0;
+        for (Vydavok vydavok : vydavkyPreSucet) {
+            sum += vydavok.getCena();
+        }
+        System.out.println("Celkové výdavky prostredníctvom foreach sú: " + sum);
+
+        HashMap<String, Double> kategorieCelkoveVydavky = funkcionalita.spocitajVsetkyVydavkyPodlaKategorie();
+        for (String kategoria : kategorieCelkoveVydavky.keySet()) {
+            double hodnota = kategorieCelkoveVydavky.get(kategoria);
+            System.out.println(kategoria + ": " + hodnota);
+        }
+
+        funkcionalita.closeConn();
     }
 }
