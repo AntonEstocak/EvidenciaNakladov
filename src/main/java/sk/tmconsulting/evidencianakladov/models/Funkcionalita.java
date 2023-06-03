@@ -26,7 +26,7 @@ public class Funkcionalita implements IFunkcionalita {
 
         String url = "jdbc:mysql://localhost:3306/evidencianakladov_db"; // zmeňte URL a názov databázy podľa potreby
         String username = "root"; // zmeňte používateľské meno podľa potreby
-        String password = "password"; // zmeňte heslo podľa potreby
+        String password = "Available1977"; // zmeňte heslo podľa potreby
 
         if (this.conn == null) {
             System.out.println("conn je ešte null");
